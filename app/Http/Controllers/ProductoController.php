@@ -22,7 +22,7 @@ class ProductoController extends Controller
      */
     public function create()
     {
-        //
+        return view('Productos/Create');
     }
 
     /**
@@ -30,9 +30,14 @@ class ProductoController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nombre' => ['required', 'max-length: 50']
+        $datos = $request->validate([
+            'nombre' => ['required', 'string', 'max:100'],
+            'precio' => ['required', 'numeric', 'min:0'],
         ]);
+
+        Producto::create($datos);
+
+        return redirect()->route('productos.index')->with('success', 'Producto creado correctamente.');
     }
 
     /**
@@ -48,7 +53,9 @@ class ProductoController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $producto = Producto::findOrFail($id);
+
+        return view('Productos/Edit', compact('producto'));
     }
 
     /**
@@ -56,7 +63,16 @@ class ProductoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $producto = Producto::findOrFail($id);
+
+        $datos = $request->validate([
+            'nombre' => ['required', 'string', 'max:100'],
+            'precio' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $producto->update($datos);
+
+        return redirect()->route('productos.index')->with('success', 'Producto actualizado correctamente.');
     }
 
     /**
@@ -64,6 +80,9 @@ class ProductoController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $producto = Producto::findOrFail($id);
+        $producto->delete();
+
+        return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
     }
 }
